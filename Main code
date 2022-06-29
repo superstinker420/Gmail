@@ -1,1 +1,9 @@
 
+import imapclient
+i = imapclient.IMAPClient('imap-mail.outlook.com') 
+
+i.login('knifymcknifer@gmail.com', 'Der3blu!')
+
+i.select_folder('INBOX')
+I.search(['UNSEEN'])
+i.read([]unreasponded )
