@@ -1,22 +1,42 @@
+import smtplib
+import RPi.GPIO as GPIO
+from email.mime.text import MIMEText
 
-import imapclient
-i = imapclient.IMAPClient('imap-mail.outlook.com') 
+# Set up servo motor
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12, GPIO.OUT)
+pwm = GPIO.PWM(12, 50)
+pwm.start(7.5)
 
-i.login('knifymcknifer@gmail.com', 'Der3blu!')
+# Set up SMTP server
+smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
+smtp_server.ehlo()
+smtp_server.starttls()
 
-i.select_folder('INBOX')
-i.search(['UNSEEN'])
+# Log in to email account
+email = "knifymcknifer@gmail.com"
+password = "your_email_password"
+smtp_server.login(email, password)
 
-import imaplib
-imap._MAXLINE = 10000000
+# Send riddle as email
+riddle = "What has a head and a tail, but no body?"
+msg = MIMEText(riddle)
+msg['Subject'] = 'Riddle'
+msg['From'] = email
+msg['To'] = 'recipient@example.com'
+smtp_server.send_message(msg)
 
-rawmsgs = i.fetch(uids, ['BODY[]'])
+# Wait for user to respond with answer
+answer = input("What is the answer to the riddle? ")
 
-import pyzmail
-msg = 
-pyzmail.PyzMessage.factory(rawmsgs[40041]['BODY[]']) 
+# Check if answer is correct
+if answer.lower() == "coin":
+    # Turn servo motor 90 degrees
+    pwm.ChangeDutyCycle(12.5)
+else:
+    print("Incorrect answer")
 
-msg.get_subject()
-msg.get_addresses('from')
-msg.get_addresses('to')
-msg.get_addresses('cc')
+# Clean up
+pwm.stop()
+GPIO.cleanup()
+smtp_server.quit()
