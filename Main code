@@ -1,42 +1,23 @@
-import smtplib
-import RPi.GPIO as GPIO
-from email.mime.text import MIMEText
+from tkinter import *
 
-# Set up servo motor
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(12, GPIO.OUT)
-pwm = GPIO.PWM(12, 50)
-pwm.start(7.5)
+def show_riddle():
+  riddle_window = Toplevel(root)
+  riddle_label = Label(riddle_window, text="What has a heart that doesn't beat?")
+  riddle_label.pack()
+  answer_entry = Entry(riddle_window)
+  answer_entry.pack()
+  submit_button = Button(riddle_window, text="Submit", command=check_answer)
+  submit_button.pack()
 
-# Set up SMTP server
-smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
-smtp_server.ehlo()
-smtp_server.starttls()
+def check_answer():
+  answer = answer_entry.get()
+  if answer.lower() == "artichoke":
+    riddle_label.config(text="Correct! The answer is artichoke.")
+  else:
+    riddle_label.config(text="Incorrect. Try again.")
 
-# Log in to email account
-email = "knifymcknifer@gmail.com"
-password = "your_email_password"
-smtp_server.login(email, password)
-
-# Send riddle as email
-riddle = "What has a head and a tail, but no body?"
-msg = MIMEText(riddle)
-msg['Subject'] = 'Riddle'
-msg['From'] = email
-msg['To'] = 'recipient@example.com'
-smtp_server.send_message(msg)
-
-# Wait for user to respond with answer
-answer = input("What is the answer to the riddle? ")
-
-# Check if answer is correct
-if answer.lower() == "coin":
-    # Turn servo motor 90 degrees
-    pwm.ChangeDutyCycle(12.5)
-else:
-    print("Incorrect answer")
-
-# Clean up
-pwm.stop()
-GPIO.cleanup()
-smtp_server.quit()
+root = Tk()
+root.title("Riddle")
+riddle_button = Button(root, text="Show Riddle", command=show_riddle)
+riddle_button.pack()
+root.mainloop()
